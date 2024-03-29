@@ -12,8 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 import os
 from pathlib import Path
-import django_heroku
-import dj_database_url
+
 
 from datetime import timedelta
 from corsheaders.defaults import default_headers
