@@ -7,7 +7,7 @@ from base.views import CookieTokenRefreshView, CookieTokenObtainPairView
 
 urlpatterns = [
    path('admin/', admin.site.urls),
-   path('api/users/', include('base.urls')),
+   path('api/', include('base.urls')),
 
    path('api/token/', CookieTokenObtainPairView.as_view()),
    path('api/token/refresh/', CookieTokenRefreshView.as_view()),

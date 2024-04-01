@@ -1,13 +1,18 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions, status
+from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
 from django.contrib.auth import logout
+import os
 
 from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 from rest_framework_simplejwt.exceptions import InvalidToken
 
 from .serializers import UserCreateSerializer, UserSerializer
+
 
 class RegisterView(APIView):
 
@@ -69,3 +74,19 @@ class LogoutView(APIView):
         logout(request)
         # Возвращаем ответ с сообщением об успешном выходе из системы
         return Response({"message": "Successfully logged out."})
+    
+
+
+@csrf_exempt
+def get_pdf(request, lab_id, param):
+    pdf_path = os.path.join(settings.MEDIA_ROOT, f'{lab_id}_{param}.pdf')
+    print(f"Requested PDF path: {pdf_path}")
+
+    if os.path.exists(pdf_path):
+        with open(pdf_path, 'rb') as pdf_file:
+            response = HttpResponse(pdf_file.read(), content_type='application/pdf')
+            response['Content-Disposition'] = f'inline; filename="{lab_id}_{param}.pdf"'
+            return response
+    else:
+        print("PDF file not found")
+        return HttpResponse('PDF file not found', status=404)
