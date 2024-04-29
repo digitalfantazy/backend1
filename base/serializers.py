@@ -12,7 +12,7 @@ User = get_user_model()
 class UserCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('username', 'email', 'password')
+        fields = ('name', 'username', 'email', 'password')
 
     def validate_username_onlyENG(self, value):
         if not re.match(r'^[a-zA-Z0-9]+$', value):
@@ -26,6 +26,9 @@ class UserCreateSerializer(serializers.ModelSerializer):
         errors = {}
         user = User(**data)
 
+        name = data.get('name')  # Получение имени из данных
+        if not name:
+            errors['name'] = ['Поле "Имя" обязательно для заполнения']  # Проверка наличия имени
 
         username = data.get('username')
         if username:
@@ -70,9 +73,10 @@ class UserCreateSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user = User.objects.create_user(
+            name=validated_data['name'],
             username=validated_data['username'],
             email=validated_data['email'],
-            password=validated_data['password']
+            password=validated_data['password'],
         )
 
         return user
@@ -81,4 +85,4 @@ class UserCreateSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('username', 'email')
+        fields = ('name', 'username', 'email')

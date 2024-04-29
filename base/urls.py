@@ -1,10 +1,18 @@
 from django.urls import path
-from .views import RegisterView, RetrieveUserView, LogoutView, get_pdf
+from .views import CookieTokenObtainPairView, CookieTokenRefreshView, LogoutView, RegisterView, ResenedVerificationCode, RetrieveUserView, GetPdfView, VerifyEmail
+from rest_framework_simplejwt.views import TokenVerifyView
 
 urlpatterns = [
-    path('users/register', RegisterView.as_view()),
+    path('auth/token/', CookieTokenObtainPairView.as_view()),
+    path('auth/token/refresh/', CookieTokenRefreshView.as_view()),
+    path('auth/token/verify/', TokenVerifyView.as_view()),
+
+    path('auth/register', RegisterView.as_view()),
+    path('auth/verify-email/<slug:username>', VerifyEmail.as_view(), name="verify-email"),
+    path('auth/verify-email/user/resendcode', ResenedVerificationCode.as_view()),
+    path('auth/logout', LogoutView.as_view(), name="logout"),
+
     path('users/me', RetrieveUserView.as_view()),
-    path('users/logout', LogoutView.as_view()),
-    path('pdf/<str:lab_id>/<str:param>', get_pdf, name='get_pdf')
+    path('pdf/<str:lab_id>/<str:param>', GetPdfView.as_view(), name='get_pdf')
 ]
 

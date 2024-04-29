@@ -30,9 +30,6 @@ SECRET_KEY = 'django-insecure-opsb@&!mlgr-7m#0z4036^2_4svzv!0clcuzx$qdan!klt@w3e
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
-
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -44,7 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'base',
-    "corsheaders"
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
@@ -57,6 +54,38 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
 ]
+
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'http')
+
+CORS_ALLOW_HEADERS = default_headers + (
+    'credentials',
+)
+
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ORIGIN_WHITELIST = [
+    "http://127.0.0.1:8000",
+    "http://127.0.0.1:3000",
+    "https://digitalfantazy.github.io",
+    "https://diplom1-production-3fa4.up.railway.app"
+]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://127.0.0.1:8000",
+    "http://127.0.0.1:3000",
+    "https://diplom1-production-3fa4.up.railway.app"
+]
+
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+
+CORS_ALLOW_CREDENTIALS = True
 
 ROOT_URLCONF = 'backend.urls'
 
@@ -78,23 +107,6 @@ TEMPLATES = [
 
 
 
-CORS_ORIGIN_ALLOW_ALL = True
-CORS_ORIGIN_WHITELIST = [
-    "http://127.0.0.1:3000",
-    "https://digitalfantazy.github.io",
-    "https://diplom1-production-3fa4.up.railway.app"
-]
-
-CORS_ALLOW_METHODS = [
-    'DELETE',
-    'GET',
-    'OPTIONS',
-    'PATCH',
-    'POST',
-    'PUT',
-]
-
-CORS_ALLOW_CREDENTIALS = True
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
@@ -139,13 +151,35 @@ REST_FRAMEWORK = {
 
 AUTH_USER_MODEL = "base.UserAccount"
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.yandex.ru'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = 'artemaa5809@yandex.ru'
+EMAIL_HOST_PASSWORD = 'pcnpbuoefvmbumyz'
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = True
+SERVER_EMAIL = EMAIL_HOST_USER
+
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
+
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'diplomdb',
+        'USER': 'django_admin',
+        'PASSWORD': '5809Art0985',
+        'HOST': '127.0.0.1',
+        'PORT': '5432'
     }
 }
 
