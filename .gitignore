@@ -1,3 +1,5 @@
 gitignore
 /venv
 data.json
+.env
+.env.development

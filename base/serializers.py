@@ -3,7 +3,7 @@ from django.core import exceptions
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.core.validators import validate_email
-from django.core.exceptions import ValidationError
+# from django.core.exceptions import ValidationError
 import re
 
 User = get_user_model()
@@ -81,6 +81,26 @@ class UserCreateSerializer(serializers.ModelSerializer):
 
         return user
     
+class ChangePasswordSerializer(serializers.Serializer):
+    current_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
+    confirm_new_password = serializers.CharField(required=True)
+
+    def validate(self, data):
+        if data['new_password'] != data['confirm_new_password']:
+            raise serializers.ValidationError({"confirm_new_password": "New passwords must match."})
+        
+        user = self.context['request'].user
+        if not user.check_password(data['current_password']):
+            raise serializers.ValidationError({"current_password": "Current password is incorrect."})
+        
+        try:
+            # Validate the password and catch the validation errors if any
+            validate_password(data['new_password'], user)
+        except exceptions.ValidationError as e:
+            raise serializers.ValidationError({'new_password': list(e.messages)})
+
+        return data
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:

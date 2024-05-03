@@ -2,13 +2,17 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions, status
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.core.exceptions import ValidationError
 
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.utils import timezone
-from django.core.mail import send_mail
+from django.core.mail import EmailMessage
+
+
+from backend.settings import FRONT_URL, EMAIL_HOST_USER
 
 import os
 
@@ -19,7 +23,7 @@ from rest_framework_simplejwt.exceptions import InvalidToken
 from base.models import OtpToken, RefreshSession, UserAccount
 from base.signals import user_registered
 
-from .serializers import UserCreateSerializer, UserSerializer
+from .serializers import UserCreateSerializer, UserSerializer, ChangePasswordSerializer
 
 
 class RegisterView(APIView):
@@ -54,7 +58,7 @@ class VerifyEmail(APIView):
             user_otp = OtpToken.objects.filter(user=user).order_by('-tp_created_at').first()
 
             if not user_otp:
-                return Response("No OTP token found", status=status.HTTP_400_BAD_REQUEST)
+                return Response("No OTP token found", status=status.HTTP_404_NOT_FOUND)
 
             if request.method == 'POST':
                 otp_code = request.data.get('opt_code')
@@ -75,7 +79,7 @@ class VerifyEmail(APIView):
             else:
                 return Response("Invalid OTP", status=status.HTTP_400_BAD_REQUEST)
         except get_user_model().DoesNotExist:
-            return Response("User not found", status=status.HTTP_400_BAD_REQUEST)
+           return Response("User not found", status=status.HTTP_400_BAD_REQUEST)
 
 class ResenedVerificationCode(APIView):
 
@@ -90,25 +94,53 @@ class ResenedVerificationCode(APIView):
 
             otp = OtpToken.objects.create(user=user, otp_expires_at=timezone.now() + timezone.timedelta(minutes=5)) 
                 # email variables
-            subject="Email Verification"
+            subject = "Подтверждение электронного адреса"
             message = f"""
-                                Здравствуйте, {user.username}, ваш новый код подтверждения: {otp.otp_code} 
-                                it expires in 5 minute, use the url below to redirect back to the website
-                                http://127.0.0.1:8000/api/verify-email/{user.username}
-                                
-                                """
-            sender = "artemaa5809@yandex.ru"
-            receiver = [user.email, ]
-            
-            
-            # send email
-            send_mail(
-                    subject,
-                    message,
-                    sender,
-                    receiver,
-                    fail_silently=False,
-                    )
+                <html>
+                <head>
+                    <style>
+                        body {{
+                            font-family: 'Arial', sans-serif;
+                            font-size: 14px;
+                            color: #333;
+                        }}
+                        p {{
+                            margin: 10px 0;
+                        }}
+                        strong {{
+                            font-size: 16px;
+                            color: #000;
+                        }}
+                        a {{
+                            color: #0645AD;
+                            text-decoration: none;
+                        }}
+                        .greeting {{
+                            font-size: 16px;
+                        }}
+                    </style>
+                </head>
+                <body>
+                    <p class="greeting">Здравствуйте, <strong>{user.name}</strong>!</p>
+                    <p>Ваш код подтверждения: <strong>{otp.otp_code}</strong></p>
+                    <p>Данный код действителен в течение 5 минут. Если код истек, вы можете запросить новый.</p>
+                    <p>Используйте этот код для подтверждения вашего электронного адреса на сайте.</p>
+                    <p>Вы также можете активировать свой аккаунт, перейдя по <a href="{FRONT_URL}/auth/verify-email/{user.username}">ссылке</a>.</p>
+                    <br>
+                    <p>Спасибо за регистрацию!</p>
+                </body>
+                </html>
+                """
+            email = EmailMessage(
+                subject,
+                message,
+                EMAIL_HOST_USER,
+                [user.email],
+                headers={'Content-Type': 'text/html'}
+            )
+            email.content_subtype = "html"  # Если используете EmailMessage, установите этот параметр
+            email.send(fail_silently=False)
+  
                 
         return Response("A new OTP has been sent to your email-address", status=status.HTTP_200_OK)
 
@@ -243,7 +275,7 @@ class LogoutView(APIView):
         # response.delete_cookie('sessionid')
         # response.delete_cookie('csrftoken')
         # Вызываем функцию logout() для выхода пользователя из системы
-        # logout(request)
+        # logout(request) Нужно вернуть респоснс, с логаут (возможно нет куки)
         return response
         
 class GetPdfView(APIView):
@@ -261,4 +293,16 @@ class GetPdfView(APIView):
                 return response
         else:
             print("PDF file not found")
-            return HttpResponse('PDF file not found', status=404)
+            return HttpResponse('PDF file not found', status=404)\
+            
+class ChangePassword(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        print(request.data)
+        serializer = ChangePasswordSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            request.user.set_password(serializer.validated_data['new_password'])
+            request.user.save()
+            return Response({"detail": "Password updated successfully"}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

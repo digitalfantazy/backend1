@@ -12,14 +12,18 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 import os
 from pathlib import Path
-
+from dotenv import load_dotenv
 
 from datetime import timedelta
 from corsheaders.defaults import default_headers
 
+load_dotenv(dotenv_path='.env')
+# load_dotenv(dotenv_path='.env.development')
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+FRONT_URL = os.getenv('FRONT_URL')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -28,7 +32,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-opsb@&!mlgr-7m#0z4036^2_4svzv!0clcuzx$qdan!klt@w3e'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# положить в env
+DEBUG = True 
+# DJANGO_LOG_LEVEL
 
 # Application definition
 
@@ -153,12 +159,13 @@ AUTH_USER_MODEL = "base.UserAccount"
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.yandex.ru'
-EMAIL_PORT = 465
-EMAIL_HOST_USER = 'artemaa5809@yandex.ru'
-EMAIL_HOST_PASSWORD = 'pcnpbuoefvmbumyz'
+EMAIL_PORT = os.getenv('EMAIL_PORT')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS = False
 EMAIL_USE_SSL = True
 SERVER_EMAIL = EMAIL_HOST_USER
+
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
@@ -175,11 +182,11 @@ SERVER_EMAIL = EMAIL_HOST_USER
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'diplomdb',
-        'USER': 'django_admin',
-        'PASSWORD': '5809Art0985',
-        'HOST': '127.0.0.1',
-        'PORT': '5432'
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT'),
     }
 }
 

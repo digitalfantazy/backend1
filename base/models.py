@@ -7,6 +7,7 @@ import secrets
 
 class UserAccountManager(BaseUserManager):
     def create_user(self, name, username, email, password=None):
+        
         if not email:
             raise ValueError("Users must have an email address")
 
