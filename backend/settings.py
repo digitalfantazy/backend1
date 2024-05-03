@@ -76,6 +76,11 @@ CORS_ORIGIN_WHITELIST = [
     "https://diplom1-production-3fa4.up.railway.app"
 ]
 
+ALLOWES_HOSTS = [
+    'backend1-production-ac0a.up.railway.app',
+    "http://127.0.0.1:8000",
+]
+
 CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:8000",
     "http://127.0.0.1:3000",
