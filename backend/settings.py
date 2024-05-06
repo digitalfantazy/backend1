@@ -17,8 +17,8 @@ from dotenv import load_dotenv
 from datetime import timedelta
 from corsheaders.defaults import default_headers
 
-load_dotenv(dotenv_path='.env')
-# load_dotenv(dotenv_path='.env.development')
+# load_dotenv(dotenv_path='.env')
+load_dotenv(dotenv_path='.env.development')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -80,6 +80,7 @@ ALLOWED_HOSTS = [
     "backend1-production-ac0a.up.railway.app",
     "https://diplom1-production-3fa4.up.railway.app",
     "http://127.0.0.1:8000",
+    "127.0.0.1",
 ]
 
 CORS_ALLOWED_ORIGINS = [
