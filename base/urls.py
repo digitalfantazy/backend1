@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import CookieTokenObtainPairView, CookieTokenRefreshView, LogoutView, RegisterView, ResenedVerificationCode, RetrieveUserView, GetPdfView, VerifyEmail, ChangePassword
+from .views import CookieTokenObtainPairView, CookieTokenRefreshView, LogoutView, RegisterView, ResenedVerificationCode, RetrieveUserView, GetPdfView, VerifyEmail, ChangePassword, GetPdfFromSelectelView, CardListView
 from rest_framework_simplejwt.views import TokenVerifyView
 
 urlpatterns = [
@@ -15,6 +15,9 @@ urlpatterns = [
     path('auth/logout', LogoutView.as_view(), name="logout"),
 
     path('users/me', RetrieveUserView.as_view()),
-    path('pdf/<str:lab_id>/<str:param>', GetPdfView.as_view(), name='get_pdf')
+    path('pdf/<str:lab_id>/<str:param>', GetPdfView.as_view(), name='get_pdf'),
+
+    path('cards/', CardListView.as_view(), name='card_list'),
+    path('get-pdf/<str:filename>/', GetPdfFromSelectelView.as_view(), name='get_pdf_from_selectel'),
 ]
 

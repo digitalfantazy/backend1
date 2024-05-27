@@ -74,3 +74,19 @@ class RefreshSession(models.Model):
 
     def __str__(self):
         return f"RefreshSession for user {self.user.username}"
+    
+class PDFFile(models.Model):
+    name = models.CharField(max_length=255)
+    url = models.URLField(max_length=255)
+
+    def __str__(self):
+        return self.name
+
+class BooksCard(models.Model):
+    title = models.CharField(max_length=255)
+    authors = models.CharField(max_length=255)
+    description = models.TextField()
+    pdf_file = models.ForeignKey(PDFFile, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.title

@@ -9,7 +9,6 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
-
 import os
 from pathlib import Path
 from dotenv import load_dotenv
@@ -17,8 +16,8 @@ from dotenv import load_dotenv
 from datetime import timedelta
 from corsheaders.defaults import default_headers
 
-# load_dotenv(dotenv_path='.env')
-load_dotenv(dotenv_path='.env.development')
+load_dotenv(dotenv_path='.env')
+# load_dotenv(dotenv_path='.env.development')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -51,6 +50,8 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -58,7 +59,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
 ]
 
 
@@ -68,26 +68,16 @@ CORS_ALLOW_HEADERS = default_headers + (
     'credentials',
 )
 
-CORS_ORIGIN_ALLOW_ALL = True
-CORS_ORIGIN_WHITELIST = [
-    "http://127.0.0.1:8000",
-    "http://127.0.0.1:3000",
-    "https://digitalfantazy.github.io",
-    "https://diplom1-production-3fa4.up.railway.app"
-]
-
-ALLOWED_HOSTS = [
-    "backend1-production-ac0a.up.railway.app",
-    "https://diplom1-production-3fa4.up.railway.app",
-    "http://127.0.0.1:8000",
-    "127.0.0.1",
-]
+CORS_ALLOW_ALL_ORIGINS = False
 
 CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:8000",
     "http://127.0.0.1:3000",
+    "http://localhost:3000",
     "https://diplom1-production-3fa4.up.railway.app"
 ]
+
+CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOW_METHODS = [
     'DELETE',
@@ -98,7 +88,24 @@ CORS_ALLOW_METHODS = [
     'PUT',
 ]
 
-CORS_ALLOW_CREDENTIALS = True
+ALLOWED_HOSTS = [
+    "backend1-production-ac0a.up.railway.app",
+    "https://diplom1-production-3fa4.up.railway.app",
+    "http://127.0.0.1:8000",
+    "127.0.0.1",
+    "localhost"
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:3000',
+    'http://127.0.0.1:3000'
+    "https://diplom1-production-3fa4.up.railway.app",
+    "https://backend1-production-ac0a.up.railway.app",
+]
+
+# CSRF settings
+# CSRF_COOKIE_HTTPONLY = False  # Убедитесь, что этот параметр отключен, если вам нужно доступ к куки в JavaScript
+# CSRF_COOKIE_SECURE = False    # Убедитесь, что этот параметр отключен для разработки на localhost
 
 ROOT_URLCONF = 'backend.urls'
 
@@ -174,6 +181,14 @@ EMAIL_USE_SSL = True
 SERVER_EMAIL = EMAIL_HOST_USER
 
 
+SELECTEL_API_URL = "https://cloud.api.selcloud.ru/identity/v3/auth/tokens"
+USERNAME = os.getenv('SELECTEL_USERNAME')
+ACCOUNT_ID = os.getenv('SELECTEL_ACCOUNT_ID')
+PASSWORD = os.getenv('SELECTEL_PASSWORD')
+PROJECT_NAME = os.getenv('SELECTEL_PROJECT_NAME')
+
+
+
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
@@ -183,6 +198,9 @@ SERVER_EMAIL = EMAIL_HOST_USER
 #         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
+
+SELECTEL_API_AUTH_TOKEN = 'gAAAAABmU7Vdl33e-hv6UVsxfH02CfoH0CrspFqhONi6Sep0rT_ADVFCF216JPrBPWTf4oVKUTBIpp8yXpJNGcT1clrvBfzMJHUiBjv6QlIn3nLhUoKPc_YE5DdqWszrFsEtvy0lJCzDcbLm9lm9YQx7vp4v425N2j_FJi6poEfb-YRcEh0lBbI'
+
 
 
 
@@ -197,6 +215,7 @@ DATABASES = {
     }
 }
 
+# print("DATABASE SETTINGS:", os.getenv('DB_NAME'), os.getenv('DB_USER'), os.getenv('DB_PASSWORD'), os.getenv('DB_HOST'), os.getenv('DB_PORT'))
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators

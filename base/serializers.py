@@ -3,6 +3,7 @@ from django.core import exceptions
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.core.validators import validate_email
+from .models import PDFFile, BooksCard
 # from django.core.exceptions import ValidationError
 import re
 
@@ -106,3 +107,15 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('name', 'username', 'email')
+
+class PDFFileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PDFFile
+        fields = ('id', 'name', 'url')
+
+class CardSerializer(serializers.ModelSerializer):
+    pdf_file = PDFFileSerializer()
+
+    class Meta:
+        model = BooksCard
+        fields = ('id', 'title', 'authors', 'description', 'pdf_file')
