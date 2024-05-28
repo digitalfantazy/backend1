@@ -293,6 +293,7 @@ class ChangePassword(APIView):
 class CardListView(generics.ListAPIView):
     queryset = BooksCard.objects.all()
     serializer_class = CardSerializer
+    
 
 
 class GetPdfFromSelectelView(APIView):
