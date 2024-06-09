@@ -1,11 +1,12 @@
 import requests
 from django.core.cache import cache
+from backend.settings import SELECTEL_API_URL, USERNAME, ACCOUNT_ID, PASSWORD, PROJECT_NAME
 
-SELECTEL_API_URL = "https://cloud.api.selcloud.ru/identity/v3/auth/tokens"
-USERNAME = "artem"
-ACCOUNT_ID = "322005"
-PASSWORD = "5809Art5809"
-PROJECT_NAME = "Storage"
+# SELECTEL_API_URL = "https://cloud.api.selcloud.ru/identity/v3/auth/tokens"
+# USERNAME = "artem"
+# ACCOUNT_ID = "322005"
+# PASSWORD = "5809Art5809"
+# PROJECT_NAME = "Storage"
 
 def get_selectel_token():
     token = cache.get('selectel_token')

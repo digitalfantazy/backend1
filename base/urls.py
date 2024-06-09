@@ -15,7 +15,7 @@ urlpatterns = [
     path('auth/logout', LogoutView.as_view(), name="logout"),
 
     path('users/me', RetrieveUserView.as_view()),
-    path('pdf/<str:lab_id>/<str:param>', GetPdfView.as_view(), name='get_pdf'),
+    path('pdf/<str:filename>/', GetPdfView.as_view(), name='get_pdf'),
 
     path('cards/', CardListView.as_view(), name='card_list'),
     path('get-pdf/<str:filename>/', GetPdfFromSelectelView.as_view(), name='get_pdf_from_selectel'),

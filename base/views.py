@@ -264,14 +264,14 @@ class GetPdfView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     # @csrf_exempt
-    def get(self, request, lab_id, param):
-        pdf_path = os.path.join(settings.MEDIA_ROOT, f'{lab_id}_{param}.pdf')
+    def get(self, request, filename):
+        pdf_path = os.path.join(settings.MEDIA_ROOT, f'{filename}.pdf')
         print(f"Requested PDF path: {pdf_path}")
 
         if os.path.exists(pdf_path):
             with open(pdf_path, 'rb') as pdf_file:
                 response = HttpResponse(pdf_file.read(), content_type='application/pdf')
-                response['Content-Disposition'] = f'inline; filename="{lab_id}_{param}.pdf"'
+                response['Content-Disposition'] = f'inline; filename="{filename}.pdf"'
                 return response
         else:
             print("PDF file not found")
@@ -300,7 +300,6 @@ class GetPdfFromSelectelView(APIView):
 
     permission_classes = [permissions.IsAuthenticated]
 
-# url = f'https://swift.ru-1.storage.selcloud.ru/v1/b7e2aca2ba59439d96d8b93c7111d121/pdf/osnovi_zashiti_inf.pdf'
     def get(self, request, filename):
         token = get_selectel_token()
         try:
@@ -309,12 +308,13 @@ class GetPdfFromSelectelView(APIView):
             return HttpResponse('PDF file not found', status=404)
 
         headers = {'X-Auth-Token': token}
-        print(pdf_file.url)
         response = requests.get(pdf_file.url, headers=headers)
         
         if response.status_code == 200:
-            return HttpResponse(response.content, content_type='application/pdf')
+            response = HttpResponse(response.content, content_type='application/pdf')
+            response['Access-Control-Allow-Origin'] = '*'
+            response['Access-Control-Allow-Methods'] = 'GET'
+            response['Access-Control-Allow-Headers'] = 'Content-Type'
+            return response
         else:
             return HttpResponse('PDF file not found', status=404)
-
-
